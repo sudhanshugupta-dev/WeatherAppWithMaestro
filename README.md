@@ -1,57 +1,50 @@
-Bold Point
+# TaskBit Weather App
 
-Forecast API Update:
-The 7-day forecast feature isn't working as the API requires a paid subscription after key creation. As an alternative, I've implemented hourly weather updates to ensure users still get relevant weather info. Let me know if we should explore other free APIs.
+TaskBit is an Expo/React Native app that surfaces current and hourly weather powered by the OpenWeather API. The free tier blocks the 7-day forecast endpoint, so the app focuses on reliable hourly data as a practical alternative.
 
+## Features
+- Current conditions and hourly outlook based on the user's location (requests runtime location permission).
+- Swipeable hourly carousel with explicit test IDs for UI automation.
+- Simple checkout demo flow used by the end-to-end test suite.
+- Graceful fallback when the paid 7-day forecast API is unavailable.
 
+## Getting Started
+1. Install dependencies: `npm install`
+2. Add your OpenWeather API key in `utils/api.js` (`API_KEY` constant). Consider moving this to environment config before production.
+3. Start the dev server: `npx expo start`
+4. Run on device: scan the QR in Expo Go, or use an emulator/simulator from the Expo CLI menu.
 
-# Welcome to your Expo app 👋
+## Project Layout
+- `app/` – Expo Router screens and navigation.
+- `components/` – Shared UI pieces.
+- `utils/api.js` – OpenWeather fetch helper (update `API_KEY` here).
+- `.maestro/` – Maestro UI flow definitions.
+- `debug_output/.maestro`, `maestro-debug/.maestro` – Saved Maestro artifacts (logs/screens).
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+## Screenshots
+Captured images live in the repo root for easy GitHub preview:
 
-## Get started
+![Home Screen](home_screen.png)
+![Hourly Forecast](forecast_screen.png)
+![Form Flow](blackscreen.png)
+![Checkout Success](checkout_success.png)
 
-1. Install dependencies
+In-app icons/art live under `assets/` (e.g., `assets/cloud.png`, `assets/sun.png`, `assets/images/icon.png`).
 
-   ```bash
-   npm install
-   ```
+## Maestro Setup & Usage
+Maestro drives the UI tests located in `.maestro/*.yaml` (e.g., `home_test.yaml`, `fullApp_test.yaml`, `forecast_test.yaml`).
 
-2. Start the app
+1. Install Maestro (one-time): `curl -Ls https://get.maestro.mobile.dev | bash` and ensure `~/.maestro/bin` is on your `PATH`.
+2. Prepare a device/emulator with the dev build that matches `appId: com.sudhanshu30602.TaskBit`:
+   - Android: `expo run:android` to install a development build.
+   - iOS: `expo run:ios` (or use an existing dev client build).
+3. Start the Expo dev server with the dev client: `npx expo start --dev-client`.
+4. Run a flow from project root (device/emulator must be unlocked and on the home screen):
+   - `maestro test .maestro/home_test.yaml` – validates the hourly forecast UI.
+   - `maestro test .maestro/fullApp_test.yaml` – full journey from weather view through checkout.
+5. Collect richer debug output during a run: `maestro test .maestro/fullApp_test.yaml --output debug_output`. Artifacts will land under `debug_output/.maestro` and `maestro-debug/.maestro`.
 
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Tips:
+- Keep location services enabled so the weather request can resolve coordinates.
+- If you change the `appId`, update it in each `.maestro/*.yaml`.
+- The flows rely on test IDs such as `horizontal-flatlist`, `list-item-*`, and `Forecast`; ensure they stay stable when refactoring UI components.
